@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NRG Päevik</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="Main.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+<div class="mainDiv" id="app">
+    <div class="content">
+
+    </div>
+    <div class="formsDiv">
+
+    </div>
+    <table style="width: 100%">
+        <thead>
+        <tr>
+            <th>Nr</th>
+            <th>Põhjus</th>
+            <th>Algus</th>
+            <th>Märkus</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="row in result" :key="row.id"
+        >
+            <td>{{row.id}}</td>
+            <td>{{row.reason}}</td>
+            <td>{{row.start}}</td>
+            <td>{{row.notes}}</td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            tegevused: [
+                {value:'', text: 'Vali'},
+                {value: 'eemal', text: 'Ühikast eemal'},
+                {value: 'haige', text: 'Haige'},
+                {value: 'nv', text: 'Nädalavahetusel ühikas' }
+            ],
+            dataToSend: {
+                reason: '',
+                start: null,
+                notes: null,
+            },
+            result: []
+        },
+        computed: {
+            items: function () {
+                return this.result
+            }
+        },
+        mounted() {
+            axios.get('/api/record')
+                .then( (response)=> {
+                    // handle
+
+                    //this.result = response.data
+                    this.$set(this, 'result', response.data)
+                    console.log(this.result);
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
+        },
+        methods: {
+            sendData: function () {
+                axios.post('/api/record', this.dataToSend)
+                    .then(function (result) {
+                        console.log(result)
+                        app.message = result
+                    })
+            }
+        }
+    })
+</script>
+</html>
