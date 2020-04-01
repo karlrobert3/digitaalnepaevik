@@ -13,6 +13,9 @@ const knex = require('knex')({
 })
 const app = express();
 const port = 2800;
+const bcrypt = require('bcrypt');
+
+
 
 app.use(bodyparser.json())
 app.use('/', express.static('web'));
@@ -28,6 +31,16 @@ app.post('/api/record', function(req, res) {
     res.send('Succes')
   })
 
+  })
+})
+
+app.post('/api/registration', function (req, res) {
+  const data = req.body
+  data.password = bcrypt.hashSync(data.password, 10);
+
+  console.log('REGISTRATION', req.body)
+  knex('user').insert(data).then(function () {
+    res.send('Succes')
   })
 })
 

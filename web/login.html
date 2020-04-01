@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup and register</title>
+    <link href="Login.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+    <div class="login-box" id="app">
+        <div class="fields">
+            <h1> Sign Up</h1>
+
+            <input v-model="dataToSend.firstname" type="text" name="firstname" placeholder="Firstname"/>
+            <input v-model="dataToSend.lastname" type="text" name="lastname" placeholder="Lastname"/>
+            <input v-model="dataToSend.email" type="text" name="email" placeholder="Email"/>
+            <input v-model="dataToSend.password" type="password" name="password" placeholder="Password"/>
+            <input v-model="password2" type="password" name="password2" placeholder="Retype password"/>
+            <input  type="button" class="esitaBtn" @click="sendData" name="signup-button" value="Sign Up"/>
+
+        </div>
+
+    </div>
+
+</body>
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            password2: null,
+            dataToSend: {
+                firstname: null,
+                lastname: null,
+                email: null,
+                password: null,
+            },
+            result: []
+        },
+        computed: {
+            items: function () {
+                return this.result
+            }
+        },
+        methods: {
+            sendData: function () {
+                axios.post('/api/registration', this.dataToSend)
+                    .then(function (result) {
+                        console.log(result)
+                        app.message = result
+                    })
+            }
+        }
+    })
+</script>
+</html>
