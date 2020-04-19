@@ -6,24 +6,92 @@
     <link href="Login.css" rel="stylesheet" type="text/css">
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 <body>
 
-    <div class="login-box" id="app">
-        <div class="fields">
-            <h1> Sign Up</h1>
+<div class="login-box" id="app">
+    <div class="register">
+        <h1> Sign Up</h1>
+        <form name="valid">
+            <div class="form-row">
+                <div class="firstname">
+                    <label>First name</label>
+                    <input v-model="dataToSend.firstname" type="text" class="form-control" name="firstname"
+                           placeholder="First name" required :class="{'is-invalid': !firstNameLength}">
+                </div>
+                <div class="lastname">
+                    <label for="validationDefault02">Last name</label>
+                    <input v-model="dataToSend.lastname" type="text" class="form-control" id="validationDefault02"
+                           name="lastname" placeholder="Last name" required :class="{'is-invalid': !lastNameLength}">
+                </div>
+                <div class="email">
+                    <label for="validationDefault03">email</label>
+                    <input v-model="dataToSend.email" type="email" class="form-control" id="validationDefault03"
+                           name="email" placeholder="email" aria-describedby="emailHelp" required
+                           :class="{'is-invalid': !emailLength}">
+                </div>
+                <div class="password">
+                    <label for="validationDefault04">Password</label>
+                    <input v-model="dataToSend.password" type="password" class="form-control" id="validationDefault04"
+                           name="password" placeholder="Password" required :class="{'is-invalid': !isPasswordValid}">
+                </div>
+                <div class="retype password">
+                    <label for="validationDefault05">Retype password</label>
+                    <input v-model="password2" type="password" class="form-control" id="validationDefault05"
+                           name="password2" placeholder="Retype Password" required
+                           :class="{'is-invalid': !isPasswordValid}">
+                </div>
+            </div>
+            <button class="btn btn-primary" @click="sendData" type="button" name="signup-button">Sign up</button>
+        </form>
+        <!-- <input v-model="dataToSend.firstname" type="text" name="firstname" placeholder="Firstname"/>
+        <input v-model="dataToSend.lastname" type="text" name="lastname" placeholder="Lastname"/>
+        <input v-model="dataToSend.email" type="text" name="email" placeholder="Email"/>
+        <input v-model="dataToSend.password" type="password" name="password" placeholder="Password"/>
+        <input v-model="password2" type="password" name="password2" placeholder="Retype password"/>
+        <input  type="button" class="esitaBtn" @click="sendData" name="signup-button" value="Sign Up"/>-->
 
-            <input v-model="dataToSend.firstname" type="text" name="firstname" placeholder="Firstname"/>
-            <input v-model="dataToSend.lastname" type="text" name="lastname" placeholder="Lastname"/>
-            <input v-model="dataToSend.email" type="text" name="email" placeholder="Email"/>
-            <input v-model="dataToSend.password" type="password" name="password" placeholder="Password"/>
-            <input v-model="password2" type="password" name="password2" placeholder="Retype password"/>
-            <input  type="button" class="esitaBtn" @click="sendData" name="signup-button" value="Sign Up"/>
+    </div>
+    <div class="login">
+        <h1> Sign In</h1>
+        <form>
+            <div class="form-row">
+                <div class="email.col-md-4">
+                    <label for="validationDefault06">email</label>
+                    <input v-model="loginData.loginEmail" type="email" class="form-control" id="validationDefault06"
+                           name="username"
+                           placeholder="email" aria-describedby="emailHelp" required>
+                </div>
+                <div class="sign in password.col-md-4">
+                    <label for="validationDefault07">password</label>
+                    <input v-model="loginData.loginPassword" type="password" class="form-control"
+                           id="validationDefault07"
+                           name="pw" placeholder="password" required>
+                </div>
+                <button class="btn btn-primary" @click="authenticate" type="button" name="signup-button">Sign in
+                </button>
+            </div>
+        </form>
 
-        </div>
+
+        <!--<input type="text" name="username" placeholder="Email"/>
+        <input type="password" name="pw" placeholder="Password"/>
+        <input type="button" class="esitaBtn" @click="sendData" name="signin-button" value="Sign In"/>-->
 
     </div>
 
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 </body>
 <script>
     const app = new Vue({
@@ -31,27 +99,81 @@
         data: {
             password2: null,
             dataToSend: {
-                firstname: null,
-                lastname: null,
-                email: null,
-                password: null,
+                firstname: '',
+                lastname: '',
+                email: '',
+                password: '',
+            },
+            loginData: {
+                loginEmail: '',
+                loginPassword: '',
             },
             result: []
         },
         computed: {
             items: function () {
                 return this.result
+            },
+            firstNameLength: function () {
+                if (this.dataToSend.firstname.match(/[a-zA-Z]/g)) {
+                    return this.dataToSend.firstname.length > 1
+                } else {
+                    return false
+                }
+            },
+            lastNameLength: function () {
+                if (this.dataToSend.lastname.match(/[a-zA-Z]/g)) {
+                    return this.dataToSend.lastname.length > 1
+                } else {
+                    return false
+                }
+            },
+            emailLength: function () {
+                if (this.dataToSend.email.match(/@opilased.nrg.edu.ee/)) {
+                    return this.dataToSend.email.length > 1
+                } else {
+                    return false
+                }
+            },
+
+            isPasswordValid: function () {
+                //todo kõik üheks
+                if (this.dataToSend.password.match(/[a-z]/g) && this.dataToSend.password.match(
+                    /[A-Z]/g) && this.dataToSend.password.match(
+                    /[0-9]/g) && this.dataToSend.password.length >= 8) {
+                    return this.dataToSend.password === this.password2
+                } else {
+                    return false;
+
+
+                }
+            },
+            isDataValid: function () {
+                return ![this.firstNameLength, this.lastNameLength, this.isPasswordValid, this.emailLength].some(i => !i)
             }
         },
         methods: {
             sendData: function () {
-                axios.post('/api/registration', this.dataToSend)
+                if (this.isDataValid) {
+                    axios.post('/api/registration', this.dataToSend)
+                        .then(function (result) {
+                            console.log(result)
+                            app.message = result
+                        })
+                }
+
+            },
+            authenticate: function () {
+                axios.post('/api/login', this.loginData)
                     .then(function (result) {
                         console.log(result)
                         app.message = result
+
                     })
+
             }
         }
+
     })
 </script>
 </html>
