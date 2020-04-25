@@ -1,115 +1,152 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>NRG Päevik</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="Main.css" rel="stylesheet" type="text/css">
-        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    </head>
+<head>
+    <title>NRG Päevik</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="Main.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+</head>
 
-    <body>
-        <div class="mainDiv" id="app">
-            <div class="content">
-                <p class="titleText" >NRG Ühiselamu päevik</p>
+<body>
+<div class="mainDiv" id="app">
+    <div class="content">
+        <p class="titleText">NRG Ühiselamu päevik</p>
 
-            </div>
-            <div class="formsDiv">
-                <div class="inputDiv">
-                    <p class="inputTxt">Tegevus: </p>
-                    <select v-model="dataToSend.reason" class="inputField" name="tegevus">
-                        <option v-for="option in tegevused" :value="option.value">
-                            {{ option.text }}
-                        </option>
-                    </select>
-                </div>   
-                <div class="inputDiv">
-                    <p class="inputTxt">Algus: </p>
-                    <input v-model="dataToSend.start" type="datetime-local"name="algus">
-                </div>
-                <div class="inputDiv">
-                    <p class="inputTxt">Märkus: </p>
-                    <input v-model="dataToSend.notes" class="inputField" name="markus" type="text"/>
-                </div>
-                <div>
-                    <button type='button' class='esitaBtn' @click="sendData">Esita</button>
-                </div>
-            </div>
-            <table style="width: 100%">
-                <thead>
-                <tr>
-                    <th>Nr</th>
-                    <th>Põhjus</th>
-                    <th>Algus</th>
-                    <th>Märkus</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="row in result" :key="row.id"
-                >
-                    <td>{{row.id}}</td>
-                    <td>{{row.reason}}</td>
-                    <td>{{row.start}}</td>
-                    <td>{{row.notes}}</td>
-                </tr>
+    </div>
+    <div class="formsDiv" v-if="!isAdmin">
 
-                </tbody>
-            </table>
+
+        <div class="inputDiv">
+            <p class="inputTxt">Tegevus: </p>
+            <select v-model="dataToSend.reason" class="inputField" name="tegevus">
+                <option v-for="option in tegevused" :value="option.value">
+                    {{ option.text }}
+                </option>
+            </select>
         </div>
-    </body>
-    <script>
-        const app = new Vue({
-            el: '#app',
-            data: {
-                tegevused: [
-                    {value:'', text: 'Vali'},
-                    {value: 'eemal', text: 'Ühikast eemal'},
-                    {value: 'haige', text: 'Haige'},
-                    {value: 'nv', text: 'Nädalavahetusel ühikas' }
-                ],
-                dataToSend: {
-                    reason: '',
-                    start: null,
-                    notes: null,
-                },
-                result: []
-            },
-            computed: {
-              items: function () {
-                return this.result
-              }
-            },
-            mounted() {
-                axios.get('/api/record')
-                    .then( (response)=> {
-                        // handle
+        <div class="inputDiv">
+            <p class="inputTxt">Algus: </p>
+            <input v-model="dataToSend.start" type="datetime-local" name="algus">
+        </div>
+        <div class="inputDiv">
+            <p class="inputTxt">Märkus: </p>
+            <input v-model="dataToSend.notes" class="inputField" name="markus" type="text"/>
+        </div>
+        <div>
+            <button type='button' class='esitaBtn' @click="sendData">Esita</button>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nr</th>
+            <th>Põhjus</th>
+            <th>Algus</th>
+            <th>Märkus</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="row in result" :key="row.id"
+        >
+            <td>{{row.id}}</td>
+            <td>{{row.reason}}</td>
+            <td>{{row.start | date}}</td>
+            <td>{{row.notes}}</td>
+            <td><button @click="editRecord">Muuda</button></td>
+        </tr>
 
-                        //this.result = response.data
-                        this.$set(this, 'result', response.data)
-                        console.log(this.result);
-                    })
-                    .catch(function (error) {
-                        // handle error
-                        console.log(error);
-                    })
-                    .finally(function () {
-                        // always executed
-                    });
-            },
-            methods: {
-                sendData: function () {
-                    axios.post('/api/record', this.dataToSend)
-                        .then(function (result) {
-                            console.log(result)
-                            app.message = result
-                        })
-                }
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    Vue.filter('date', function (value) {
+        return moment(value).format('HH:mm, ddd  DD MMM YYYY')
+    });
+  const app = new Vue({
+    el: '#app',
+    data: {
+      tegevused: [
+        {value: '', text: 'Vali'},
+        {value: 'eemal', text: 'Ühikast eemal'},
+        {value: 'haige', text: 'Haige'},
+        {value: 'nv', text: 'Nädalavahetusel ühikas'}
+      ],
+      dataToSend: {
+        reason: '',
+        start: null,
+        notes: null,
+      },
+      result: [],
+      user: null
+    },
+    computed: {
+      items: function () {
+        return this.result
+      },
+      isAdmin: function () {
+        return this.user && this.user.role === 'Admin'
+      }
+    },
+    mounted() {
+      this.getData()
+      this.getUser()
+      console.log(this.isAdmin)
+    },
+    methods: {
+      sendData: function () {
+        axios.post('/api/record', this.dataToSend)
+          .then(function (result) {
+            console.log(result)
+            app.message = result
+          })
+      },
+      getData: function () {
+        axios.get('/api/record')
+          .then((response) => {
+            // handle
+
+            //this.result = response.data
+            this.$set(this, 'result', response.data)
+            console.log(this.result);
+          })
+          .catch(function (error) {
+            // handle error
+            console.log('what ever', Object.keys(error));
+            console.log('what ever', error.response.status);
+            if (error.response.status === 401) {
+              window.location.replace('http://localhost:3000/login.html')
             }
-        })
-    </script>
+          })
+
+      },
+      getUser: function () {
+        axios.get('/api/user')
+          .then((result) => {
+            console.log(result)
+            this.$set(this, 'user', result.data)
+          })
+      },
+      editRecord: function (id) {
+        // TODO olemasoleva kirje muutmine
+        axios.put('/api/record/'+id)
+      }
+
+    }
+  })
+</script>
 </html>
