@@ -2,56 +2,178 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Signup and register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
     <link href="Login.css" rel="stylesheet" type="text/css">
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
 <body>
 
-    <div class="login-box" id="app">
-        <div class="fields">
-            <h1> Sign Up</h1>
-
-            <input v-model="dataToSend.firstname" type="text" name="firstname" placeholder="Firstname"/>
-            <input v-model="dataToSend.lastname" type="text" name="lastname" placeholder="Lastname"/>
-            <input v-model="dataToSend.email" type="text" name="email" placeholder="Email"/>
-            <input v-model="dataToSend.password" type="password" name="password" placeholder="Password"/>
-            <input v-model="password2" type="password" name="password2" placeholder="Retype password"/>
-            <input  type="button" class="esitaBtn" @click="sendData" name="signup-button" value="Sign Up"/>
-
+<div id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-8 offset-2">
+                <div class="card mt-5">
+                    <div class="card-header" v-if="!resetPassword">
+                        Sign in
+                    </div>
+                    <div class="card-header" v-if="resetPassword">
+                        Reset Password
+                    </div>
+                    <div class="card-body" v-if="!resetPassword">
+                        <div class="row p-3">
+                            <div class="col">
+                                <label>E-mail</label>
+                            </div>
+                            <div class="col">
+                                <input v-model="loginData.loginEmail"
+                                       type="email"
+                                       class="form-control"
+                                       name="email"
+                                       placeholder="email"
+                                       required
+                                >
+                            </div>
+                        </div>
+                        <div class="row p-3">
+                            <div class="col">
+                                <label>Password</label>
+                            </div>
+                            <div class="col">
+                                <input
+                                        v-model="loginData.loginPassword"
+                                        type="password"
+                                        class="form-control"
+                                        name="pw"
+                                        placeholder="password"
+                                        required
+                                >
+                            </div>
+                        </div>
+                        <div class="row p-4 text-right">
+                            <div class="col">
+                                <button class="btn btn-primary" @click="authenticate" type="button" name="signup-button">Sign in
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" v-if="resetPassword">
+                        <div class="row p-3">
+                            <div class="col">
+                                <label>E-mail</label>
+                            </div>
+                            <div class="col">
+                                <input v-model="resetEmail.resetEmail"
+                                       type="email"
+                                       class="form-control"
+                                       name="email"
+                                       placeholder="email"
+                                       required
+                                >
+                            </div>
+                        </div>
+                        <div class="row p-4 text-right">
+                            <div class="col">
+                                <button class="btn btn-primary" @click="passwordReset" type="button" name="signup-button">Reset Password</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <button v-if="!resetPassword" @click="resetPassword = 1" type="submit">Forgot Password</button>
+                        <a href="register.html">Sign up</a>
+                    </div>
+                </div>
+            </div>
         </div>
-
     </div>
+</div>
 
+<!--<form>-->
+<!--    <div class="form-row">-->
+<!--        <div class="email.col-md-4">-->
+
+
+<!--        </div>-->
+<!--        <div class="sign in password.col-md-4">-->
+<!--            <label for="validationDefault07">password</label>-->
+<!--            <input v-model="loginData.loginPassword" type="password" class="form-control"-->
+<!--                   id="validationDefault07"-->
+<!--                   name="pw" placeholder="password" required>-->
+<!--        </div>-->
+<!--        <button class="btn btn-primary" @click="authenticate" type="button" name="signup-button">Sign in-->
+<!--        </button>-->
+<!--    </div>-->
+<!--    <a href="register.html">Register</a>-->
+<!--</form>-->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 </body>
 <script>
-    const app = new Vue({
-        el: '#app',
-        data: {
-            password2: null,
-            dataToSend: {
-                firstname: null,
-                lastname: null,
-                email: null,
-                password: null,
-            },
-            result: []
-        },
-        computed: {
-            items: function () {
-                return this.result
+  const app = new Vue({
+    el: '#app',
+    data: {
+      loginData: {
+        loginEmail: '',
+        loginPassword: '',
+      },
+      resetEmail: {
+        resetEmail: ''
+      },
+      resetPassword: 0,
+      result: ''
+    },
+    computed: {
+    },
+    methods: {
+      authenticate: function () {
+        axios.post('/api/login', this.loginData)
+          .then(function (result) {
+            //console.log(result)
+            if (result.status === 200) {
+              window.location.replace('http://localhost:3000/main.html')
             }
-        },
-        methods: {
-            sendData: function () {
-                axios.post('/api/registration', this.dataToSend)
-                    .then(function (result) {
-                        console.log(result)
-                        app.message = result
-                    })
+            app.message = result
+
+          })
+        .catch(error => {
+            console.log('We have an error', Object.keys(error));
+            console.log('We have an error', error.response);
+            if (error.response.status === 400){
+              alert(error.response.data)
             }
-        }
-    })
+            if (error.response.status === 403){
+              alert(error.response.data)
+            }
+        })
+
+      },
+      passwordReset: function () {
+        console.log(this.resetEmail)
+        axios.post('/api/passwordReset', this.resetEmail)
+        .then(function (result) {
+        })
+        .catch(error =>{
+          console.log('Error xD', error.response);
+          if (error.response.status === 400){
+            alert(error.response.data)
+          }
+          if (error.response.status === 403) {
+            alert(error.response.data)
+          }
+        })
+      }
+    }
+
+  })
 </script>
 </html>
