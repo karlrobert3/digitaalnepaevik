@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
     <link href="Login.css" rel="stylesheet" type="text/css">
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -16,10 +17,13 @@
         <div class="row">
             <div class="col-8 offset-2">
                 <div class="card mt-5">
-                    <div class="card-header">
+                    <div class="card-header" v-if="!resetPassword">
                         Sign in
                     </div>
-                    <div class="card-body">
+                    <div class="card-header" v-if="resetPassword">
+                        Reset Password
+                    </div>
+                    <div class="card-body" v-if="!resetPassword">
                         <div class="row p-3">
                             <div class="col">
                                 <label>E-mail</label>
@@ -28,10 +32,11 @@
                                 <input v-model="loginData.loginEmail"
                                        type="email"
                                        class="form-control"
-                                       name="username"
+                                       name="email"
                                        placeholder="email"
                                        required
-                                ></div>
+                                >
+                            </div>
                         </div>
                         <div class="row p-3">
                             <div class="col">
@@ -55,16 +60,34 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card-body" v-if="resetPassword">
+                        <div class="row p-3">
+                            <div class="col">
+                                <label>E-mail</label>
+                            </div>
+                            <div class="col">
+                                <input v-model="resetEmail.resetEmail"
+                                       type="email"
+                                       class="form-control"
+                                       name="email"
+                                       placeholder="email"
+                                       required
+                                >
+                            </div>
+                        </div>
+                        <div class="row p-4 text-right">
+                            <div class="col">
+                                <button class="btn btn-primary" @click="passwordReset" type="button" name="signup-button">Reset Password</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-footer text-right">
+                        <button v-if="!resetPassword" @click="resetPassword = 1" type="submit">Forgot Password</button>
                         <a href="register.html">Sign up</a>
                     </div>
                 </div>
             </div>
         </div>
-
-
-
-
     </div>
 </div>
 
@@ -103,21 +126,51 @@
         loginEmail: '',
         loginPassword: '',
       },
-      result: []
+      resetEmail: {
+        resetEmail: ''
+      },
+      resetPassword: 0,
+      result: ''
     },
-    computed: {},
+    computed: {
+    },
     methods: {
       authenticate: function () {
         axios.post('/api/login', this.loginData)
           .then(function (result) {
-            console.log(result)
+            //console.log(result)
             if (result.status === 200) {
               window.location.replace('http://localhost:3000/main.html')
             }
             app.message = result
 
           })
+        .catch(error => {
+            console.log('We have an error', Object.keys(error));
+            console.log('We have an error', error.response);
+            if (error.response.status === 400){
+              alert(error.response.data)
+            }
+            if (error.response.status === 403){
+              alert(error.response.data)
+            }
+        })
 
+      },
+      passwordReset: function () {
+        console.log(this.resetEmail)
+        axios.post('/api/passwordReset', this.resetEmail)
+        .then(function (result) {
+        })
+        .catch(error =>{
+          console.log('Error xD', error.response);
+          if (error.response.status === 400){
+            alert(error.response.data)
+          }
+          if (error.response.status === 403) {
+            alert(error.response.data)
+          }
+        })
       }
     }
 
